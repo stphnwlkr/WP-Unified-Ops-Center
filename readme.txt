@@ -4,7 +4,7 @@ Tags: admin bar, workflow, builder, bricks, etch, templates
 Requires at least: 6.9.4
 Tested up to: 7.0
 Requires PHP: 8.3
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -64,6 +64,11 @@ Yes. Settings allow administrators to enable or disable sections and content typ
 Builder detection is shown in Ops Center > Settings because it is informational and not a direct panel action.
 
 == Changelog ==
+
+= 1.0.1 =
+* Fixed admin bar panel switching after the plugin folder rename.
+* Fixed the Ops Center Settings link to use the unified-ops-center page slug.
+* Improved current template labels so matched templates show a readable title when available.
 
 = 1.0.0 =
 * Initial public release.
