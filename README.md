@@ -1,5 +1,8 @@
 # Ops Center
 
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/8c1ee508-befc-412a-a9ec-d4e15ab403d0" />
+
+
 Ops Center is a builder-aware WordPress admin bar command center for WordPress, Bricks Builder, and Etch Builder sites.
 
 The packaged folder is `unified-ops-center`, but the plugin name shown in WordPress remains **Ops Center**.
