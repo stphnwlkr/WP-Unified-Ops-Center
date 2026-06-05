@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Ops Center
  * Description: A builder-aware command center for WordPress sites using WordPress, Etch, or Bricks.
- * Version: 1.0.0
+ * Version: 1.0.1
  * Requires at least: 6.9.4
  * Requires PHP: 8.3
  * Tested up to: 7.0
@@ -20,7 +20,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('OPS_CENTER_VERSION', '1.0.0');
+define('OPS_CENTER_VERSION', '1.0.1');
 define('OPS_CENTER_FILE', __FILE__);
 define('OPS_CENTER_PATH', plugin_dir_path(__FILE__));
 define('OPS_CENTER_URL', plugin_dir_url(__FILE__));

@@ -38,7 +38,7 @@ final class Admin_Bar {
         $this->remove_etch_nodes($admin_bar);
 
         $admin_bar->add_node([
-            'id'    => 'unified-ops-center',
+            'id'    => 'ops-center',
             'title' => 'Ops Center <span class="dashicons dashicons-arrow-down-alt2" style="font-family:dashicons;font-size:14px;line-height:34px;" aria-hidden="true"></span>',
             'href'  => false,
             'meta'  => [
@@ -48,7 +48,7 @@ final class Admin_Bar {
 
         $admin_bar->add_node([
             'id'     => 'ops-center-panel',
-            'parent' => 'unified-ops-center',
+            'parent' => 'ops-center',
             'title'  => $this->render_flyout_panel($settings, $current_context, $content_url, $template_data),
             'href'   => false,
             'meta'   => [
@@ -58,7 +58,7 @@ final class Admin_Bar {
     }
 
     private function remove_etch_nodes(WP_Admin_Bar $admin_bar): void {
-        foreach (['etch-edit-template', 'etch-edit-content', 'edit-with-etch', 'unified-ops-center'] as $node_id) {
+        foreach (['etch-edit-template', 'etch-edit-content', 'edit-with-etch', 'ops-center'] as $node_id) {
             $admin_bar->remove_node($node_id);
         }
     }
@@ -205,7 +205,7 @@ final class Admin_Bar {
             [
                 [
                     'label' => __('Ops Center Settings', 'unified-ops-center'),
-                    'url'   => admin_url('admin.php?page=ops-center'),
+                    'url'   => admin_url('admin.php?page=' . Settings::PAGE_SLUG),
                 ],
             ]
         );
@@ -710,13 +710,24 @@ final class Admin_Bar {
             return null;
         }
 
-        $slugs_to_ids = array_column($matches, 'ID', 'post_name');
+        $templates_by_slug = [];
+
+        foreach ($matches as $match) {
+            if (!$match instanceof WP_Post) {
+                continue;
+            }
+
+            $templates_by_slug[(string) $match->post_name] = $match;
+        }
 
         foreach ($candidates as $candidate) {
-            if (isset($slugs_to_ids[$candidate])) {
+            if (isset($templates_by_slug[$candidate])) {
+                $template = $templates_by_slug[$candidate];
+                $title    = trim((string) get_the_title((int) $template->ID));
+
                 return [
-                    'id'    => (int) $slugs_to_ids[$candidate],
-                    'label' => $this->template_label($candidate),
+                    'id'    => (int) $template->ID,
+                    'label' => '' !== $title ? $title : $this->template_label($candidate),
                 ];
             }
         }
