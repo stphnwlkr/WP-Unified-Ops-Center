@@ -19,12 +19,16 @@ document.addEventListener('DOMContentLoaded', function () {
     function closePanel() {
         root.classList.remove('ops-center-panel-open');
         root.classList.remove('hover');
+        document.documentElement.classList.remove('ops-center-open');
+        document.body.classList.remove('ops-center-open');
         trigger.setAttribute('aria-expanded', 'false');
     }
 
     function openPanel() {
         root.classList.add('ops-center-panel-open');
         root.classList.add('hover');
+        document.documentElement.classList.add('ops-center-open');
+        document.body.classList.add('ops-center-open');
         trigger.setAttribute('aria-expanded', 'true');
     }
 
@@ -56,6 +60,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     panelWrapper.addEventListener('click', function (event) {
         event.stopPropagation();
+
+        if (event.target === panelWrapper) {
+            closePanel();
+            trigger.focus();
+        }
     });
 
     panelWrapper.addEventListener('keydown', function (event) {
@@ -157,33 +166,5 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-
-    root.querySelectorAll('[data-ops-center-open-command-palette]').forEach(function (link) {
-        link.addEventListener('click', function (event) {
-            event.preventDefault();
-            event.stopPropagation();
-
-            closePanel();
-
-            window.setTimeout(function () {
-                try {
-                    if (window.wp && wp.data && typeof wp.data.dispatch === 'function') {
-                        var commands = wp.data.dispatch('core/commands');
-
-                        if (commands && typeof commands.open === 'function') {
-                            commands.open();
-                            return;
-                        }
-                    }
-                } catch (error) {}
-
-                var coreButton = document.querySelector('#wp-admin-bar-command-palette .ab-item, #wp-admin-bar-command-palette button');
-
-                if (coreButton && typeof coreButton.click === 'function') {
-                    coreButton.click();
-                }
-            }, 75);
-        });
-    });
 
 });
