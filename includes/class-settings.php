@@ -27,6 +27,7 @@ final class Settings {
                 'shortcuts'    => true,
             ],
             'content_types' => $this->public_post_type_names(),
+            'show_internal_plugin_post_types' => false,
             'show_detected_tools' => true,
             'detected_tools_enabled' => [
                 'acf' => true,
@@ -92,6 +93,7 @@ final class Settings {
         }
 
         $settings['enabled_menus']['integrations'] = $settings['enabled_menus']['integrations'] ?? true;
+        $settings['show_internal_plugin_post_types'] = (bool) ($settings['show_internal_plugin_post_types'] ?? false);
         $settings['show_detected_tools'] = (bool) ($settings['show_detected_tools'] ?? true);
         $settings['detected_tools_enabled'] = array_merge($defaults['detected_tools_enabled'], array_map('boolval', (array) $settings['detected_tools_enabled']));
         $settings['remove_default_posts'] = (bool) ($settings['remove_default_posts'] ?? false);
@@ -135,7 +137,7 @@ final class Settings {
     }
 
 
-    public function public_post_type_names(): array {
+    public function public_post_type_names(bool $include_internal = false): array {
         $post_types = get_post_types(
             [
                 'show_ui' => true,
@@ -170,6 +172,10 @@ final class Settings {
                 continue;
             }
 
+            if (!$include_internal && self::is_internal_plugin_post_type((string) $post_type)) {
+                continue;
+            }
+
             $is_allowed_builtin = in_array($post_type, ['post', 'page', 'attachment'], true);
 
             if (!$is_allowed_builtin && !empty($post_type_object->_builtin)) {
@@ -200,6 +206,67 @@ final class Settings {
             'mb-views',
             'jet-engine',
         ];
+    }
+
+
+    public static function internal_plugin_post_type_slugs(): array {
+        return [
+            'shop_order',
+            'shop_coupon',
+            'product_variation',
+            'sc_order',
+            'sc_subscription',
+            'sc_customer',
+            'surecart_order',
+            'surecart_subscription',
+            'surecart_customer',
+            'surecart_checkout',
+            'surecart_product',
+            'wpcode',
+            'wpcode_snippet',
+            'wpcode_block',
+            'wpforms',
+            'wpcf7_contact_form',
+            'flamingo_contact',
+            'flamingo_inbound',
+            'forminator_forms',
+            'forminator_polls',
+            'forminator_quizzes',
+            'rank_math_schema',
+            'elementor_library',
+            'elementor_font',
+            'elementor_icons',
+            'bricks_template',
+        ];
+    }
+
+    public static function internal_plugin_post_type_prefixes(): array {
+        return [
+            'sc_',
+            'surecart_',
+            'wpcode_',
+            'rank_math_',
+            'elementor_',
+            'fluentform_',
+            'frm_',
+            'tribe_',
+            'edd_',
+            'download_',
+        ];
+    }
+
+    public static function is_internal_plugin_post_type(string $post_type): bool {
+        if (in_array($post_type, self::internal_plugin_post_type_slugs(), true)) {
+            return true;
+        }
+
+        foreach (self::internal_plugin_post_type_prefixes() as $prefix) {
+            if (str_starts_with($post_type, $prefix)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function sanitize($value): array {
@@ -252,8 +319,9 @@ final class Settings {
             'shortcuts'    => !empty($value['enabled_menus']['shortcuts']) || !empty($value['enabled_menus']['community']),
         ];
 
+        $settings['show_internal_plugin_post_types'] = !empty($value['show_internal_plugin_post_types']);
         $settings['content_types'] = [];
-        $allowed_post_types = $this->public_post_type_names();
+        $allowed_post_types = $this->public_post_type_names((bool) $settings['show_internal_plugin_post_types']);
 
         if (!empty($value['content_types']) && is_array($value['content_types'])) {
             foreach ($value['content_types'] as $post_type) {

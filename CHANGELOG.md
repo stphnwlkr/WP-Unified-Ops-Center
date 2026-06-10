@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.4.1
+- Fixed title bar action label line-height inheritance from the WordPress admin bar.
+
+## 1.4.0
+- Removed builder edit actions from Media items because attachments are not edited in Etch or Bricks.
+- Hid common internal plugin implementation post types from Content Type menus by default.
+- Added a setting to show internal plugin post types when needed.
+
 ## 1.3.2
 - Moved Builder Assets above Content Types in the panel navigation.
 - Standardized title bar action button sizing.

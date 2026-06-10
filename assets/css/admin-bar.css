@@ -1061,6 +1061,8 @@ body.ops-center-open {
     text-overflow: ellipsis;
     white-space: nowrap;
 }
-#wpadminbar .ops-center-panel__top-action span{
-    line-height: 1!important;
+
+/* 1.4.1: Override WordPress admin bar inherited line-height on title bar action labels. */
+#wpadminbar .ops-center-panel__top-action.ops-center-panel__top-action span {
+    line-height: 1;
 }

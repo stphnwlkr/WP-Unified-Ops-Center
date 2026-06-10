@@ -60,7 +60,7 @@ Ops Center is designed with WCAG AA in mind:
 
 ## Changelog
 
-### 1.3.2
+### 1.4.0
 - Moved Builder Assets above Content Types.
 - Standardized title bar action button sizing.
 - Added pattern category labels to the Patterns list when available.
