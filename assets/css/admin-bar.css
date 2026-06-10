@@ -408,3 +408,404 @@
     background: rgba(34, 113, 177, 0.22) !important;
     color: #fff !important;
 }
+
+#wpadminbar .ops-center-panel__row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: .75rem;
+    align-items: center;
+    padding: .55rem .1rem;
+}
+
+#wpadminbar .ops-center-panel__row-label {
+    color: var(--ec-text);
+    min-width: 0;
+}
+
+#wpadminbar .ops-center-panel__row--pattern .ops-center-panel__row-label {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+}
+
+#wpadminbar .ops-center-panel__row-actions {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+    justify-content: flex-end;
+}
+
+#wpadminbar .ops-center-panel__item-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-block-size: 2rem;
+    padding: .35rem .7rem;
+    border: 1px solid var(--ec-border-strong);
+    border-radius: .55rem;
+    background: var(--ec-surface-muted);
+    color: var(--ec-text) !important;
+    font-weight: 700;
+    line-height: 1.1;
+    text-decoration: none;
+}
+
+#wpadminbar .ops-center-panel__item-action:hover,
+#wpadminbar .ops-center-panel__item-action:focus {
+    background: var(--ec-accent);
+    border-color: var(--ec-accent);
+    color: #fff !important;
+}
+
+#wpadminbar .ops-center-panel__item-action:focus-visible {
+    outline: 3px solid var(--ec-focus);
+    outline-offset: 2px;
+}
+
+@media (max-width: 782px) {
+    #wpadminbar .ops-center-panel__row {
+        grid-template-columns: 1fr;
+    }
+
+    #wpadminbar .ops-center-panel__row-actions {
+        justify-content: flex-start;
+    }
+}
+
+/* 1.1.4: Align the admin-bar panel with the Ops Center settings UI. */
+#wpadminbar .ops-center-panel {
+    --ec-bg: #070d18;
+    --ec-sidebar: #081827;
+    --ec-surface: #101827;
+    --ec-surface-2: #151f31;
+    --ec-surface-muted: color-mix(in srgb, var(--ec-surface-2) 74%, transparent);
+    --ec-border: rgb(148 163 184 / 0.16);
+    --ec-border-strong: rgb(148 163 184 / 0.28);
+    --ec-text: #c7c8ca;
+    --ec-heading: #f6f7fb;
+    --ec-muted: #a8b3c7;
+    --ec-faint: #667085;
+    --ec-accent: #3b82f6;
+    --ec-accent-2: #22d3ee;
+    --ec-focus: #72aee6;
+    --ec-shadow: 0 1.5rem 3rem rgb(0 0 0 / 0.35);
+    --ec-radius: 18px;
+    isolation: isolate;
+    grid-template-columns: clamp(17rem, 28vw, 20rem) clamp(32rem, 52vw, 54rem);
+    max-block-size: min(78svh, 52rem);
+    overflow: hidden;
+    color: var(--ec-text, #c7c8ca) !important;
+    background: color-mix(in srgb, var(--ec-surface, #101827) 84%, transparent);
+    border: 1px solid var(--ec-border, rgb(148 163 184 / 0.16));
+    border-radius: 20px;
+    box-shadow: var(--ec-shadow, 0 1.5rem 3rem rgb(0 0 0 / 0.35));
+}
+
+#wpadminbar #wp-admin-bar-ops-center > .ab-sub-wrapper {
+    padding: .5rem !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+}
+
+#wpadminbar .ops-center-panel::before {
+    content: "";
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline: 0;
+    z-index: -1;
+    block-size: 1px;
+    background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--ec-accent-2, #22d3ee) 55%, transparent), transparent);
+}
+
+#wpadminbar .ops-center-panel__nav,
+#wpadminbar .ops-center-panel__content {
+    block-size: min(78svh, 52rem);
+    max-block-size: min(78svh, 52rem);
+    scrollbar-color: color-mix(in srgb, var(--ec-accent, #3b82f6) 54%, var(--ec-faint, #667085)) var(--ec-sidebar, #081827);
+}
+
+#wpadminbar .ops-center-panel__nav {
+    padding: 1rem;
+    background:
+        linear-gradient(180deg, color-mix(in srgb, var(--ec-sidebar, #081827) 92%, var(--ec-accent-2, #22d3ee)), var(--ec-sidebar, #081827));
+    border-inline-end: 1px solid var(--ec-border, rgb(148 163 184 / 0.16));
+}
+
+#wpadminbar .ops-center-panel__content {
+    padding: 1rem 1.15rem;
+    background:
+        radial-gradient(circle at 100% 0%, color-mix(in srgb, var(--ec-accent, #3b82f6) 10%, transparent), transparent 26rem),
+        var(--ec-bg, #070d18);
+}
+
+#wpadminbar .ops-center-panel__section + .ops-center-panel__section {
+    margin-block-start: 1rem;
+    padding-block-start: 1rem;
+    border-block-start: 1px solid var(--ec-border, rgb(148 163 184 / 0.16));
+}
+
+#wpadminbar .ops-center-panel__heading {
+    margin-block-end: .6rem !important;
+    color: var(--ec-muted, #a8b3c7) !important;
+    font-size: .78rem !important;
+    letter-spacing: .08em;
+}
+
+#wpadminbar .ops-center-panel__pane-heading {
+    margin-block-end: .8rem !important;
+    color: var(--ec-heading, #f6f7fb) !important;
+    font-size: 1.2rem !important;
+    line-height: 1.15 !important;
+}
+
+#wpadminbar .ops-center-panel__button,
+#wpadminbar .ops-center-panel__link {
+    min-block-size: 2.75rem;
+    padding: .65rem .8rem !important;
+    color: var(--ec-text, #c7c8ca) !important;
+    background: color-mix(in srgb, var(--ec-surface-2, #151f31) 58%, transparent) !important;
+    border: 1px solid var(--ec-border, rgb(148 163 184 / 0.16));
+    border-radius: 12px;
+    font-weight: 700 !important;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / .03);
+}
+
+#wpadminbar .ops-center-panel__link {
+    justify-content: flex-start;
+}
+
+#wpadminbar .ops-center-panel__button:hover,
+#wpadminbar .ops-center-panel__button:focus,
+#wpadminbar .ops-center-panel__button.is-active,
+#wpadminbar .ops-center-panel__link:hover,
+#wpadminbar .ops-center-panel__link:focus {
+    color: #fff !important;
+    background: color-mix(in srgb, var(--ec-accent, #3b82f6) 42%, var(--ec-surface-2, #151f31)) !important;
+    border-color: color-mix(in srgb, var(--ec-accent, #3b82f6) 65%, var(--ec-border, rgb(148 163 184 / 0.16))) !important;
+}
+
+#wpadminbar .ops-center-browser__sticky {
+    gap: .7rem;
+    margin-block-end: .85rem;
+    padding: .9rem;
+    background: color-mix(in srgb, var(--ec-surface, #101827) 92%, transparent);
+    border: 1px solid var(--ec-border, rgb(148 163 184 / 0.16));
+    border-radius: var(--ec-radius, 18px);
+    box-shadow: 0 .5rem 1.5rem rgb(0 0 0 / .16);
+}
+
+#wpadminbar .ops-center-browser__search {
+    padding-inline: 0 !important;
+}
+
+#wpadminbar .ops-center-browser__input {
+    min-height: 2.75rem;
+    padding: .55rem .75rem !important;
+    color: var(--ec-text, #c7c8ca) !important;
+    background: color-mix(in srgb, #000 42%, var(--ec-bg, #070d18)) !important;
+    border: 1px solid var(--ec-border-strong, rgb(148 163 184 / 0.28)) !important;
+    border-radius: 12px !important;
+}
+
+#wpadminbar .ops-center-browser__input:focus,
+#wpadminbar .ops-center-browser__input:focus-visible {
+    border-color: var(--ec-focus, #72aee6) !important;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--ec-focus, #72aee6) 32%, transparent) !important;
+}
+
+#wpadminbar .ops-center-browser__actions {
+    gap: .25rem;
+    margin-inline: 0;
+    padding: .3rem;
+    background: color-mix(in srgb, var(--ec-surface-2, #151f31) 64%, transparent);
+    border-color: var(--ec-border, rgb(148 163 184 / 0.16));
+}
+
+#wpadminbar button.ops-center-browser__action,
+#wpadminbar .ops-center-browser__action {
+    display: inline-flex !important;
+    min-block-size: 2rem;
+    padding: .35rem .85rem !important;
+    color: var(--ec-text, #c7c8ca) !important;
+    border: 0 !important;
+    border-radius: 999px;
+    background: transparent;
+}
+
+#wpadminbar .ops-center-browser__action:hover,
+#wpadminbar .ops-center-browser__action:focus,
+#wpadminbar .ops-center-browser__action.is-active,
+#wpadminbar .ops-center-browser__action[aria-pressed="true"] {
+    color: #fff !important;
+    background: color-mix(in srgb, var(--ec-accent, #3b82f6) 58%, var(--ec-surface-2, #151f31)) !important;
+}
+
+#wpadminbar .ops-center-panel__list--scroll {
+    display: grid;
+    gap: .18rem;
+    padding-inline-end: .35rem !important;
+    scrollbar-color: color-mix(in srgb, var(--ec-accent, #3b82f6) 54%, var(--ec-faint, #667085)) var(--ec-bg, #070d18);
+}
+
+#wpadminbar .ops-center-panel__row {
+    padding: .6rem .65rem;
+    border: 1px solid transparent;
+    border-radius: 12px;
+}
+
+#wpadminbar .ops-center-panel__row:hover,
+#wpadminbar .ops-center-panel__row:focus-within {
+    background: color-mix(in srgb, var(--ec-surface-2, #151f31) 60%, transparent);
+    border-color: var(--ec-border, rgb(148 163 184 / 0.16));
+}
+
+#wpadminbar .ops-center-panel__row-label {
+    color: var(--ec-text, #c7c8ca) !important;
+    font-weight: 650;
+    line-height: 1.25;
+}
+
+#wpadminbar .ops-center-panel__row-actions {
+    gap: .4rem;
+}
+
+#wpadminbar .ops-center-panel__item-action {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: .38rem;
+    min-block-size: 2rem;
+    padding: .35rem .7rem !important;
+    border: 1px solid var(--ec-border-strong, rgb(148 163 184 / 0.28));
+    border-radius: .55rem;
+    background: var(--ec-surface-muted, rgb(21 31 49 / .74));
+    color: var(--ec-text, #c7c8ca) !important;
+    font-weight: 700 !important;
+    line-height: 1.1 !important;
+    text-decoration: none !important;
+    white-space: nowrap !important;
+}
+
+#wpadminbar .ops-center-panel__item-action:hover,
+#wpadminbar .ops-center-panel__item-action:focus {
+    background: var(--ec-accent, #3b82f6) !important;
+    border-color: var(--ec-accent, #3b82f6) !important;
+    color: #fff !important;
+    outline: none;
+}
+
+#wpadminbar .ops-center-panel__item-action:focus-visible {
+    outline: 3px solid var(--ec-focus, #72aee6);
+    outline-offset: 2px;
+}
+
+#wpadminbar .ops-center-panel__item-action-icon {
+    display: inline-grid;
+    place-items: center;
+    inline-size: 1rem;
+    block-size: 1rem;
+    flex: 0 0 auto;
+    color: currentColor;
+    font-size: 1rem;
+    line-height: 1;
+}
+
+#wpadminbar .ops-center-panel__item-action-icon.dashicons {
+    font-family: dashicons;
+    font-size: 1rem;
+    line-height: 1;
+}
+
+#wpadminbar .ops-center-panel__item-action-icon svg {
+    display: block;
+    inline-size: 1rem;
+    block-size: 1rem;
+}
+
+#wpadminbar .ops-center-panel__item-action-icon--bricks {
+    font-weight: 900;
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+#wpadminbar .ops-center-panel__badge {
+    background: color-mix(in srgb, var(--ec-accent, #3b82f6) 18%, transparent);
+    color: var(--ec-text, #c7c8ca);
+    border: 1px solid var(--ec-border, rgb(148 163 184 / 0.16));
+}
+
+#wpadminbar .ops-center-panel__empty {
+    color: var(--ec-muted, #a8b3c7) !important;
+}
+
+#wpadminbar .ops-center-panel__link:focus-visible,
+#wpadminbar .ops-center-panel__button:focus-visible,
+#wpadminbar .ops-center-browser__action:focus-visible {
+    outline: 3px solid var(--ec-focus, #72aee6) !important;
+    outline-offset: 2px;
+}
+
+@media screen and (max-width: 1100px) {
+    #wpadminbar .ops-center-panel {
+        grid-template-columns: minmax(16rem, 34vw) minmax(24rem, 1fr);
+        inline-size: calc(100vw - 1rem);
+    }
+}
+
+@media screen and (max-width: 782px) {
+    #wpadminbar .ops-center-panel {
+        border-radius: 16px;
+    }
+
+    #wpadminbar .ops-center-panel__nav,
+    #wpadminbar .ops-center-panel__content {
+        block-size: auto;
+        max-block-size: calc((100svh - 58px) / 2);
+    }
+}
+
+/* 1.1.5.1: Radius and list-spacing refinements. */
+#wpadminbar .ops-center-panel {
+    --ec-radius: 12px;
+    border-radius: 12px !important;
+}
+
+#wpadminbar .ops-center-browser__sticky,
+#wpadminbar .ops-center-browser__input,
+#wpadminbar .ops-center-panel__row,
+#wpadminbar .ops-center-panel__button,
+#wpadminbar .ops-center-panel__link {
+    border-radius: 6px !important;
+}
+
+#wpadminbar .ops-center-panel__item-action,
+#wpadminbar .ops-center-panel .button-secondary,
+#wpadminbar .ops-center-panel button.button-secondary,
+#wpadminbar .ops-center-panel a.button-secondary {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px !important;
+}
+
+#wpadminbar .ops-center-browser__action {
+    display: inline-flex !important;
+}
+
+#wpadminbar .ops-center-panel__list--links {
+    display: grid !important;
+    gap: 1em !important;
+}
+
+#wpadminbar .ops-center-panel__list--links ul,
+#wpadminbar .ops-center-resource-list ul,
+#wpadminbar .ops-center-quick-links ul {
+    display: grid !important;
+    gap: 1em !important;
+}
+
+@media screen and (max-width: 782px) {
+    #wpadminbar .ops-center-panel {
+        border-radius: 12px !important;
+    }
+}

@@ -116,11 +116,13 @@ final class Admin_Page {
                 <section class="ops-center-panel" aria-labelledby="ops-center-menus-title">
                     <div class="ops-center-panel__header"><span class="ops-center-panel__icon" aria-hidden="true">☰</span><div><h2 id="ops-center-menus-title"><?php esc_html_e('Admin Bar Menus', 'unified-ops-center'); ?></h2><p><?php esc_html_e('Choose which Ops Center sections appear in the admin bar.', 'unified-ops-center'); ?></p></div></div>
                     <?php foreach ((array) $settings['enabled_menus'] as $key => $enabled) : ?>
-                        <?php if (in_array($key, ['integrations', 'community', 'resources', 'shortcuts'], true)) { continue; } ?>
+                        <?php if (in_array($key, ['integrations', 'community', 'resources', 'shortcuts', 'command_palette'], true)) { continue; } ?>
                         <label class="ops-center-toggle"><input type="checkbox" name="<?php echo esc_attr(Settings::OPTION_KEY); ?>[enabled_menus][<?php echo esc_attr((string) $key); ?>]" value="1" <?php checked($enabled); ?>><span><?php echo esc_html(ucwords(str_replace('_', ' ', (string) $key))); ?></span></label>
                     <?php endforeach; ?>
                     <label class="ops-center-toggle"><input type="checkbox" name="<?php echo esc_attr(Settings::OPTION_KEY); ?>[enabled_menus][resources]" value="1" <?php checked(!empty($settings['enabled_menus']['resources'])); ?>><span><?php esc_html_e('Builder Resources', 'unified-ops-center'); ?></span></label>
                     <label class="ops-center-toggle"><input type="checkbox" name="<?php echo esc_attr(Settings::OPTION_KEY); ?>[enabled_menus][shortcuts]" value="1" <?php checked(!empty($settings['enabled_menus']['shortcuts'])); ?>><span><?php esc_html_e('Quick Links', 'unified-ops-center'); ?></span></label>
+                    <label class="ops-center-toggle"><input type="checkbox" name="<?php echo esc_attr(Settings::OPTION_KEY); ?>[enabled_menus][command_palette]" value="1" <?php checked(!empty($settings['enabled_menus']['command_palette'])); ?>><span><?php esc_html_e('WordPress Command Palette shortcut', 'unified-ops-center'); ?></span></label>
+                    <p class="description"><?php esc_html_e('When enabled, Ops Center shows an Open Command Palette action at the top of the admin bar panel. This uses the native WordPress command palette when WordPress has loaded it.', 'unified-ops-center'); ?></p>
                 </section>
 
                 <section class="ops-center-panel" aria-labelledby="ops-center-content-types-title">
