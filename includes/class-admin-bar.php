@@ -69,6 +69,18 @@ final class Admin_Bar {
         $active_id     = '';
 
 
+        if (!empty($settings['enabled_menus']['command_palette'])) {
+            $left_sections[] = $this->render_left_link_section(
+                __('WordPress', 'unified-ops-center'),
+                [
+                    [
+                        'label' => __('Open Command Palette', 'unified-ops-center'),
+                        'url'   => '#ops-center-command-palette',
+                    ],
+                ]
+            );
+        }
+
         $current_items = $this->current_content_items($current_context, $content_url, $template_data);
         if ($current_items) {
             $left_sections[] = $this->render_left_link_section(__('Current Content', 'unified-ops-center'), $current_items);
@@ -200,14 +212,16 @@ final class Admin_Bar {
             $left_sections[] = $this->render_left_button_section(__('Resources', 'unified-ops-center'), $resource_buttons);
         }
 
+        $administration_items = [
+            [
+                'label' => __('Ops Center Settings', 'unified-ops-center'),
+                'url'   => admin_url('admin.php?page=' . Settings::PAGE_SLUG),
+            ],
+        ];
+
         $left_sections[] = $this->render_left_link_section(
             __('Administration', 'unified-ops-center'),
-            [
-                [
-                    'label' => __('Ops Center Settings', 'unified-ops-center'),
-                    'url'   => admin_url('admin.php?page=' . Settings::PAGE_SLUG),
-                ],
-            ]
+            $administration_items
         );
 
         if (!$panes) {
@@ -379,28 +393,97 @@ final class Admin_Bar {
         );
     }
 
-    private function render_panel_link(string $label, string $url, string $target = '', string $wp_editor_url = '', int $author_id = 0): string {
-        $target_attr = '_blank' === $target ? ' target="_blank" rel="noopener noreferrer"' : '';
-        $wp_attr     = '';
+    private function render_panel_link(string $label, string $url, string $target = '', string $wp_editor_url = '', int $author_id = 0, string $view_url = '', bool $show_actions = false): string {
+        $target_attr  = '_blank' === $target ? ' target="_blank" rel="noopener noreferrer"' : '';
+        $action_attrs = '';
+        $author_attr  = $author_id > 0 ? sprintf(' data-ops-center-author="%d"', $author_id) : '';
 
-        if ('' !== $wp_editor_url) {
-            $wp_attr = sprintf(
-                ' data-ops-center-wp-editor-url="%s" title="%s"',
-                esc_url($wp_editor_url),
-                esc_attr(sprintf(__('Open in %s. Command/Ctrl + Option/Alt-click opens the WordPress editor.', 'unified-ops-center'), $this->detected_builder()['label']))
+        if ('#ops-center-command-palette' === $url) {
+            $action_attrs = sprintf(
+                ' data-ops-center-open-command-palette="true" aria-label="%s"',
+                esc_attr__('Open the WordPress command palette', 'unified-ops-center')
             );
         }
 
-        $author_attr = $author_id > 0 ? sprintf(' data-ops-center-author="%d"', $author_id) : '';
+        if (!$show_actions || '' === $wp_editor_url) {
+            $wp_attr = '';
+
+            if ('' !== $wp_editor_url) {
+                $wp_attr = sprintf(
+                    ' data-ops-center-wp-editor-url="%s" title="%s"',
+                    esc_url($wp_editor_url),
+                    esc_attr(sprintf(__('Open in %s. Command/Ctrl + Option/Alt-click opens the WordPress editor.', 'unified-ops-center'), $this->detected_builder()['label']))
+                );
+            }
+
+            return sprintf(
+                '<li class="ops-center-panel__item"%s><a class="ops-center-panel__link" href="%s"%s%s%s>%s</a></li>',
+                $author_attr,
+                esc_url($url),
+                $target_attr,
+                $wp_attr,
+                $action_attrs,
+                esc_html($label)
+            );
+        }
+
+        $builder       = $this->detected_builder();
+        $builder_label = 'wordpress' === $builder['key'] ? '' : (string) $builder['label'];
+        $actions       = '';
+
+        if ('' !== $builder_label && '' !== $url) {
+            $actions .= $this->render_item_action($builder_label, sprintf(__('Edit %s in %s', 'unified-ops-center'), $label, $builder_label), $url);
+        }
+
+        $actions .= $this->render_item_action(__('Core WP', 'unified-ops-center'), sprintf(__('Edit %s in WordPress', 'unified-ops-center'), $label), $wp_editor_url);
+
+        if ('' !== $view_url) {
+            $actions .= $this->render_item_action(__('View', 'unified-ops-center'), sprintf(__('View %s', 'unified-ops-center'), $label), $view_url, '_blank');
+        }
 
         return sprintf(
-            '<li class="ops-center-panel__item"%s><a class="ops-center-panel__link" href="%s"%s%s>%s</a></li>',
+            '<li class="ops-center-panel__item"%s><div class="ops-center-panel__row"><span class="ops-center-panel__row-label">%s</span><span class="ops-center-panel__row-actions">%s</span></div></li>',
             $author_attr,
+            esc_html($label),
+            $actions
+        );
+    }
+
+    private function render_item_action(string $label, string $aria_label, string $url, string $target = ''): string {
+        $target_attr = '_blank' === $target ? ' target="_blank" rel="noopener noreferrer"' : '';
+        $icon        = $this->action_icon($label);
+
+        return sprintf(
+            '<a class="ops-center-panel__item-action" href="%s" aria-label="%s" title="%s"%s>%s<span class="ops-center-panel__item-action-label">%s</span></a>',
             esc_url($url),
+            esc_attr($aria_label),
+            esc_attr($aria_label),
             $target_attr,
-            $wp_attr,
+            $icon,
             esc_html($label)
         );
+    }
+
+    private function action_icon(string $label): string {
+        $normalized = strtolower($label);
+
+        if (str_contains($normalized, 'etch')) {
+            return '<span class="ops-center-panel__item-action-icon ops-center-panel__item-action-icon--etch" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" focusable="false"><path d="M11.8 80.5H42.1121C51.7977 80.5 60.031 73.4613 61.4888 63.9347C61.5535 62.6244 61.6624 61.585 61.782 61C66.3271 38.7595 86.112 22 109.8 22H188.2C193.609 22 198 26.3687 198 31.75V51.25C198 56.6313 193.609 61 188.2 61H101.261C78.9151 61 60.8 79.0234 60.8 101.255C60.8 111.331 52.5899 119.5 42.4622 119.5H11.8C6.39114 119.5 2 115.131 2 109.75V90.25C2 84.8687 6.39114 80.5 11.8 80.5ZM109.8 80.5H188.2C193.609 80.5 198 84.8687 198 90.25V109.75C198 115.131 193.609 119.5 188.2 119.5H109.8C101.101 119.5 93.2786 123.267 87.8939 129.25C86.217 131.113 84.7763 133.191 83.6194 135.437C81.5614 139.431 80.4 143.957 80.4 148.75C80.4 164.893 67.2263 178 51 178H11.8C6.39114 178 2 173.631 2 168.25V148.75C2 143.369 6.39114 139 11.8 139H51C59.6995 139 67.5214 135.233 72.9061 129.25C73.0813 129.055 73.254 128.858 73.4241 128.659C77.7747 123.558 80.4 116.957 80.4 109.75C80.4 104.957 81.5614 100.431 83.6194 96.4367C88.4922 86.9787 98.3917 80.5 109.8 80.5ZM109.8 139H188.2C193.609 139 198 143.369 198 148.75V168.25C198 173.631 193.609 178 188.2 178H109.8C104.391 178 100 173.631 100 168.25V148.75C100 143.369 104.391 139 109.8 139Z" fill="currentColor" clip-rule="evenodd" fill-rule="evenodd"></path></svg></span>';
+        }
+
+        if (str_contains($normalized, 'core') || str_contains($normalized, 'wp') || str_contains($normalized, 'wordpress')) {
+            return '<span class="ops-center-panel__item-action-icon dashicons dashicons-wordpress" aria-hidden="true"></span>';
+        }
+
+        if (str_contains($normalized, 'bricks')) {
+            return '<span class="ops-center-panel__item-action-icon ops-center-panel__item-action-icon--bricks" aria-hidden="true">b</span>';
+        }
+
+        if (str_contains($normalized, 'view')) {
+            return '<span class="ops-center-panel__item-action-icon dashicons dashicons-visibility" aria-hidden="true"></span>';
+        }
+
+        return '';
     }
 
     private function post_type_browser_data(string $post_type): ?array {
@@ -431,7 +514,7 @@ final class Admin_Bar {
                 continue;
             }
 
-            $items .= $this->render_panel_link($post->post_title ?: $post->post_name, $this->etch_editor_url((int) $post->ID, 0), '', $this->wp_editor_url((int) $post->ID), (int) $post->post_author);
+            $items .= $this->render_panel_link($post->post_title ?: $post->post_name, $this->etch_editor_url((int) $post->ID, 0), '', $this->wp_editor_url((int) $post->ID), (int) $post->post_author, $this->view_url((int) $post->ID), true);
         }
 
         if ('' === $items) {
@@ -545,7 +628,7 @@ final class Admin_Bar {
                 continue;
             }
 
-            $items .= $this->render_panel_link($template->post_title ?: $template->post_name, $this->etch_editor_url((int) $template->ID, 0), '', $this->wp_editor_url((int) $template->ID));
+            $items .= $this->render_panel_link($template->post_title ?: $template->post_name, $this->etch_editor_url((int) $template->ID, 0), '', $this->wp_editor_url((int) $template->ID), 0, '', true);
         }
 
         if ('' === $items) {
@@ -581,16 +664,7 @@ final class Admin_Bar {
             $sync_abbr  = $this->pattern_sync_abbr($pattern);
             $label      = $pattern->post_title ?: $pattern->post_name;
 
-            $items .= sprintf(
-                '<li class="ops-center-panel__item"><a class="ops-center-panel__link ops-center-panel__link--pattern" href="%s" data-ops-center-wp-editor-url="%s" title="%s"><span>%s</span><span class="ops-center-panel__badge" title="%s" aria-label="%s">%s</span></a></li>',
-                esc_url($this->etch_editor_url((int) $pattern->ID, 0)),
-                esc_url($this->wp_editor_url((int) $pattern->ID)),
-                esc_attr(sprintf(__('Open in %s. Command/Ctrl + Option/Alt-click opens the WordPress editor.', 'unified-ops-center'), $this->detected_builder()['label'])),
-                esc_html($label),
-                esc_attr($sync_label),
-                esc_attr($sync_label),
-                esc_html($sync_abbr)
-            );
+            $items .= $this->render_pattern_row($label, $this->etch_editor_url((int) $pattern->ID, 0), $this->wp_editor_url((int) $pattern->ID), $sync_label, $sync_abbr);
         }
 
         if ('' === $items) {
@@ -604,6 +678,27 @@ final class Admin_Bar {
             'search_label' => __('Search patterns', 'unified-ops-center'),
             'items'        => $items,
         ];
+    }
+
+    private function render_pattern_row(string $label, string $builder_url, string $wp_editor_url, string $sync_label, string $sync_abbr): string {
+        $builder       = $this->detected_builder();
+        $builder_label = 'wordpress' === $builder['key'] ? '' : (string) $builder['label'];
+        $actions       = '';
+
+        if ('' !== $builder_label && '' !== $builder_url) {
+            $actions .= $this->render_item_action($builder_label, sprintf(__('Edit %s in %s', 'unified-ops-center'), $label, $builder_label), $builder_url);
+        }
+
+        $actions .= $this->render_item_action(__('Core WP', 'unified-ops-center'), sprintf(__('Edit %s in WordPress', 'unified-ops-center'), $label), $wp_editor_url);
+
+        return sprintf(
+            '<li class="ops-center-panel__item"><div class="ops-center-panel__row ops-center-panel__row--pattern"><span class="ops-center-panel__row-label"><span>%s</span><span class="ops-center-panel__badge" title="%s" aria-label="%s">%s</span></span><span class="ops-center-panel__row-actions">%s</span></div></li>',
+            esc_html($label),
+            esc_attr($sync_label),
+            esc_attr($sync_label),
+            esc_html($sync_abbr),
+            $actions
+        );
     }
 
     private function render_browser_pane(array $browser, bool $active = false): string {
@@ -942,6 +1037,16 @@ final class Admin_Bar {
                 ['label' => 'WordPress Themes', 'url' => 'https://wordpress.org/themes/'],
             ],
         };
+    }
+
+    private function view_url(int $post_id): string {
+        $url = get_permalink($post_id);
+
+        if (!$url && 'attachment' === get_post_type($post_id)) {
+            $url = wp_get_attachment_url($post_id);
+        }
+
+        return $url ? (string) $url : '';
     }
 
     private function wp_editor_url(int $post_id): string {

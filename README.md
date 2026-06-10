@@ -60,6 +60,21 @@ Ops Center is designed with WCAG AA in mind:
 
 ## Changelog
 
+### 1.1.5.1
+- Corrected panel control radii so buttons, inputs, rows, and links use 6px while the main panel remains 12px.
+
+### 1.1.5
+
+- Refined panel border radius to 12px.
+- Refined action button radius to 6px.
+- Added 1em spacing between resource and quick link list items.
+
+### 1.1.4
+
+- Refined the admin bar panel styling to match the Ops Center settings interface.
+- Improved row action button styling with safer CSS variable fallbacks.
+- Added inline WordPress and Etch icons to row action buttons.
+
 ### 1.0.1
 
 - Fixed admin bar panel switching after the plugin folder rename.

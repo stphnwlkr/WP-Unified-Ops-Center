@@ -25,6 +25,7 @@ final class Settings {
                 'integrations' => true,
                 'resources'    => true,
                 'shortcuts'    => true,
+                'command_palette' => false,
             ],
             'content_types' => $this->public_post_type_names(),
             'show_detected_tools' => true,
@@ -92,6 +93,7 @@ final class Settings {
         }
 
         $settings['enabled_menus']['integrations'] = $settings['enabled_menus']['integrations'] ?? true;
+        $settings['enabled_menus']['command_palette'] = (bool) ($settings['enabled_menus']['command_palette'] ?? false);
         $settings['show_detected_tools'] = (bool) ($settings['show_detected_tools'] ?? true);
         $settings['detected_tools_enabled'] = array_merge($defaults['detected_tools_enabled'], array_map('boolval', (array) $settings['detected_tools_enabled']));
         $settings['remove_default_posts'] = (bool) ($settings['remove_default_posts'] ?? false);
@@ -250,6 +252,7 @@ final class Settings {
             'integrations' => !empty($value['enabled_menus']['integrations']),
             'resources'    => !empty($value['enabled_menus']['resources']),
             'shortcuts'    => !empty($value['enabled_menus']['shortcuts']) || !empty($value['enabled_menus']['community']),
+            'command_palette' => !empty($value['enabled_menus']['command_palette']),
         ];
 
         $settings['content_types'] = [];

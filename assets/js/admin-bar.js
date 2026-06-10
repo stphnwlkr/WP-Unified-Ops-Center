@@ -157,4 +157,33 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
+
+    root.querySelectorAll('[data-ops-center-open-command-palette]').forEach(function (link) {
+        link.addEventListener('click', function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            closePanel();
+
+            window.setTimeout(function () {
+                try {
+                    if (window.wp && wp.data && typeof wp.data.dispatch === 'function') {
+                        var commands = wp.data.dispatch('core/commands');
+
+                        if (commands && typeof commands.open === 'function') {
+                            commands.open();
+                            return;
+                        }
+                    }
+                } catch (error) {}
+
+                var coreButton = document.querySelector('#wp-admin-bar-command-palette .ab-item, #wp-admin-bar-command-palette button');
+
+                if (coreButton && typeof coreButton.click === 'function') {
+                    coreButton.click();
+                }
+            }, 75);
+        });
+    });
+
 });
