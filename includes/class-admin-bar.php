@@ -339,7 +339,7 @@ final class Admin_Bar {
 
     private function enabled_content_types(array $settings): array {
         $enabled = [];
-        $allowed = $this->settings->public_post_type_names();
+        $allowed = $this->settings->public_post_type_names(!empty($settings['show_internal_plugin_post_types']));
 
         foreach ((array) ($settings['content_types'] ?? []) as $post_type) {
             $post_type = sanitize_key((string) $post_type);
@@ -568,7 +568,8 @@ final class Admin_Bar {
                 continue;
             }
 
-            $items .= $this->render_panel_link($post->post_title ?: $post->post_name, $this->etch_editor_url((int) $post->ID, 0), '', $this->wp_editor_url((int) $post->ID), (int) $post->post_author, $this->view_url((int) $post->ID), true);
+            $builder_url = $this->can_edit_in_detected_builder($post_type) ? $this->etch_editor_url((int) $post->ID, 0) : '';
+            $items .= $this->render_panel_link($post->post_title ?: $post->post_name, $builder_url, '', $this->wp_editor_url((int) $post->ID), (int) $post->post_author, $this->view_url((int) $post->ID), true);
         }
 
         if ('' === $items) {
@@ -594,6 +595,20 @@ final class Admin_Bar {
         ];
     }
 
+
+    private function can_edit_in_detected_builder(string $post_type): bool {
+        $builder = (string) $this->detected_builder()['key'];
+
+        if ('wordpress' === $builder || 'attachment' === $post_type) {
+            return false;
+        }
+
+        if (Settings::is_internal_plugin_post_type($post_type) || in_array($post_type, Settings::feature_post_type_slugs(), true)) {
+            return false;
+        }
+
+        return post_type_supports($post_type, 'editor') || in_array($post_type, ['post', 'page', 'wp_block', 'wp_template', 'wp_template_part'], true);
+    }
 
     private function post_type_action_links(string $post_type, object $post_type_object): string {
         $links = '';

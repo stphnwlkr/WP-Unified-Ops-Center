@@ -124,7 +124,8 @@ final class Admin_Page {
                 </section>
 
                 <section class="ops-center-panel" aria-labelledby="ops-center-content-types-title">
-                    <div class="ops-center-panel__header"><span class="ops-center-panel__icon" aria-hidden="true">▦</span><div><h2 id="ops-center-content-types-title"><?php esc_html_e('Content Type Menus', 'unified-ops-center'); ?></h2><p><?php esc_html_e('Enable pages, posts, media, and public custom post types.', 'unified-ops-center'); ?></p></div></div>
+                    <div class="ops-center-panel__header"><span class="ops-center-panel__icon" aria-hidden="true">▦</span><div><h2 id="ops-center-content-types-title"><?php esc_html_e('Content Type Menus', 'unified-ops-center'); ?></h2><p><?php esc_html_e('Enable pages, posts, media, and public custom post types. Internal plugin post types are hidden by default.', 'unified-ops-center'); ?></p></div></div>
+                    <label class="ops-center-toggle ops-center-toggle--primary"><input type="checkbox" name="<?php echo esc_attr(Settings::OPTION_KEY); ?>[show_internal_plugin_post_types]" value="1" <?php checked(!empty($settings['show_internal_plugin_post_types'])); ?>><span><?php esc_html_e('Show internal plugin post types', 'unified-ops-center'); ?></span></label>
                     <div class="ops-center-check-list">
                         <?php foreach ($this->post_type_options() as $post_type => $label) : ?>
                             <label class="ops-center-toggle"><input type="checkbox" name="<?php echo esc_attr(Settings::OPTION_KEY); ?>[content_types][]" value="<?php echo esc_attr((string) $post_type); ?>" <?php checked(in_array($post_type, (array) $settings['content_types'], true)); ?>><span><?php echo esc_html($label); ?></span></label>
@@ -211,13 +212,15 @@ final class Admin_Page {
     <?php }
 
     private function post_type_options(): array {
+        $settings = $this->settings->get();
+        $include_internal = !empty($settings['show_internal_plugin_post_types']);
         $post_types = get_post_types(['show_ui' => true], 'objects');
         $excluded_post_types = array_merge(Settings::feature_post_type_slugs(), ['wp_block','wp_navigation','wp_template','wp_template_part','wp_global_styles','wp_font_family','wp_font_face','custom_css','customize_changeset','oembed_cache','user_request','wp_changeset','wp_pattern_category','wp_template_part_area']);
         uasort($post_types, static fn($a, $b): int => strcasecmp((string) $a->labels->name, (string) $b->labels->name));
         $options = [];
         foreach ($post_types as $post_type => $post_type_object) {
             $is_allowed_builtin = in_array($post_type, ['post', 'page', 'attachment'], true);
-            if (in_array($post_type, $excluded_post_types, true) || (!$is_allowed_builtin && !empty($post_type_object->_builtin))) { continue; }
+            if (in_array($post_type, $excluded_post_types, true) || (!$include_internal && Settings::is_internal_plugin_post_type((string) $post_type)) || (!$is_allowed_builtin && !empty($post_type_object->_builtin))) { continue; }
             $options[(string) $post_type] = (string) $post_type_object->labels->name;
         }
         return $options;

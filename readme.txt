@@ -4,7 +4,7 @@ Tags: admin bar, workflow, builder, bricks, etch, templates
 Requires at least: 6.9.4
 Tested up to: 7.0
 Requires PHP: 8.3
-Stable tag: 1.3.2
+Stable tag: 1.4.1
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -65,7 +65,7 @@ Builder detection is shown in Ops Center > Settings because it is informational 
 
 == Changelog ==
 
-= 1.3.2 =
+= 1.4.0 =
 * Moved Builder Assets above Content Types.
 * Standardized title bar action button sizing.
 * Added pattern category labels to the Patterns list when available.
