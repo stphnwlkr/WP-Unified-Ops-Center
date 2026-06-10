@@ -64,50 +64,16 @@ final class Admin_Bar {
     }
 
     private function render_flyout_panel(array $settings, ?array $current_context, string $content_url, ?array $template_data): string {
-        $left_sections = [];
-        $panes         = [];
-        $active_id     = '';
-
-
-        if (!empty($settings['enabled_menus']['command_palette'])) {
-            $left_sections[] = $this->render_left_link_section(
-                __('WordPress', 'unified-ops-center'),
-                [
-                    [
-                        'label' => __('Open Command Palette', 'unified-ops-center'),
-                        'url'   => '#ops-center-command-palette',
-                    ],
-                ]
-            );
-        }
+        $left_sections      = [];
+        $panes              = [];
+        $active_id          = '';
+        $header_actions     = '';
+        $resource_pane_id   = '';
+        $resource_pane_html = '';
 
         $current_items = $this->current_content_items($current_context, $content_url, $template_data);
         if ($current_items) {
             $left_sections[] = $this->render_left_link_section(__('Current Content', 'unified-ops-center'), $current_items);
-        }
-
-        $enabled_content_types = $this->enabled_content_types($settings);
-        if ($enabled_content_types) {
-            $buttons = '';
-
-            foreach ($enabled_content_types as $post_type) {
-                $browser = $this->post_type_browser_data($post_type);
-
-                if (!$browser) {
-                    continue;
-                }
-
-                if ('' === $active_id) {
-                    $active_id = $browser['id'];
-                }
-
-                $buttons .= $this->render_left_panel_button($browser['id'], $browser['label'], $browser['id'] === $active_id);
-                $panes[]  = $this->render_browser_pane($browser, $browser['id'] === $active_id);
-            }
-
-            if ('' !== $buttons) {
-                $left_sections[] = $this->render_left_button_section(__('Content Types', 'unified-ops-center'), $buttons);
-            }
         }
 
         $asset_buttons = '';
@@ -137,6 +103,30 @@ final class Admin_Bar {
             $left_sections[] = $this->render_left_button_section(__('Builder Assets', 'unified-ops-center'), $asset_buttons);
         }
 
+        $enabled_content_types = $this->enabled_content_types($settings);
+        if ($enabled_content_types) {
+            $buttons = '';
+
+            foreach ($enabled_content_types as $post_type) {
+                $browser = $this->post_type_browser_data($post_type);
+
+                if (!$browser) {
+                    continue;
+                }
+
+                if ('' === $active_id) {
+                    $active_id = $browser['id'];
+                }
+
+                $buttons .= $this->render_left_panel_button($browser['id'], $browser['label'], $browser['id'] === $active_id);
+                $panes[]  = $this->render_browser_pane($browser, $browser['id'] === $active_id);
+            }
+
+            if ('' !== $buttons) {
+                $left_sections[] = $this->render_left_button_section(__('Content Types', 'unified-ops-center'), $buttons);
+            }
+        }
+
         if (!empty($settings['enabled_menus']['integrations']) && !empty($settings['show_detected_tools'])) {
             $detected_integrations = $this->integration_browser_data((array) ($settings['detected_tools_enabled'] ?? []));
             if ($detected_integrations) {
@@ -157,14 +147,19 @@ final class Admin_Bar {
             }
         }
 
-        $resource_buttons = '';
+        $resources_settings_url = admin_url('admin.php?page=' . Settings::PAGE_SLUG . '-resources');
+
         if (!empty($settings['enabled_menus']['resources'])) {
             $builder          = $this->detected_builder();
             $resource_heading = $this->resource_heading((string) $builder['key']);
-            $pane_id          = 'ops-center-pane-' . sanitize_key((string) $builder['key']) . '-resources';
+            $resource_pane_id = 'ops-center-pane-' . sanitize_key((string) $builder['key']) . '-resources';
             $items            = [];
 
             foreach ($this->resources_for_builder((string) $builder['key'], $settings) as $link) {
+                if (empty($link['label']) || empty($link['url'])) {
+                    continue;
+                }
+
                 $items[] = [
                     'label'  => (string) $link['label'],
                     'url'    => (string) $link['url'],
@@ -172,14 +167,26 @@ final class Admin_Bar {
                 ];
             }
 
-            if ($items) {
-                if ('' === $active_id) {
-                    $active_id = $pane_id;
-                }
+            $items[] = [
+                'label'     => __('Add More Resources', 'unified-ops-center'),
+                'url'       => $resources_settings_url,
+                'target'    => '',
+                'is_footer' => true,
+            ];
 
-                $resource_buttons .= $this->render_left_panel_button($pane_id, $resource_heading, $pane_id === $active_id);
-                $panes[]          = $this->render_link_pane($pane_id, $resource_heading, $items, $pane_id === $active_id);
+            if ('' === $active_id) {
+                $active_id = $resource_pane_id;
             }
+
+            $resource_pane_html = $this->render_link_pane($resource_pane_id, $resource_heading, $items, $resource_pane_id === $active_id);
+            $panes[]            = $resource_pane_html;
+
+            $header_actions .= $this->render_header_panel_button(
+                $resource_pane_id,
+                $resource_heading,
+                sprintf(__('Open %s', 'unified-ops-center'), $resource_heading),
+                'dashicons-admin-links'
+            );
         }
 
         if (!empty($settings['enabled_menus']['shortcuts']) || !empty($settings['enabled_menus']['community'])) {
@@ -198,30 +205,32 @@ final class Admin_Bar {
                 ];
             }
 
-            if ($items) {
-                if ('' === $active_id) {
-                    $active_id = $pane_id;
-                }
+            $items[] = [
+                'label'     => __('Add More Quick Links', 'unified-ops-center'),
+                'url'       => $resources_settings_url,
+                'target'    => '',
+                'is_footer' => true,
+            ];
 
-                $resource_buttons .= $this->render_left_panel_button($pane_id, __('Quick Links', 'unified-ops-center'), $pane_id === $active_id);
-                $panes[]          = $this->render_link_pane($pane_id, __('Quick Links', 'unified-ops-center'), $items, $pane_id === $active_id);
+            if ('' === $active_id) {
+                $active_id = $pane_id;
             }
+
+            $panes[] = $this->render_link_pane($pane_id, __('Quick Links', 'unified-ops-center'), $items, $pane_id === $active_id);
+
+            $header_actions .= $this->render_header_panel_button(
+                $pane_id,
+                __('Quick Links', 'unified-ops-center'),
+                __('Open Ops Center quick links', 'unified-ops-center'),
+                'dashicons-admin-links'
+            );
         }
 
-        if ('' !== $resource_buttons) {
-            $left_sections[] = $this->render_left_button_section(__('Resources', 'unified-ops-center'), $resource_buttons);
-        }
-
-        $administration_items = [
-            [
-                'label' => __('Ops Center Settings', 'unified-ops-center'),
-                'url'   => admin_url('admin.php?page=' . Settings::PAGE_SLUG),
-            ],
-        ];
-
-        $left_sections[] = $this->render_left_link_section(
-            __('Administration', 'unified-ops-center'),
-            $administration_items
+        $header_actions .= $this->render_header_link(
+            admin_url('admin.php?page=' . Settings::PAGE_SLUG),
+            __('Settings', 'unified-ops-center'),
+            __('Open Ops Center settings', 'unified-ops-center'),
+            'dashicons-admin-generic'
         );
 
         if (!$panes) {
@@ -233,13 +242,46 @@ final class Admin_Bar {
         }
 
         return sprintf(
-            '<div class="ops-center-panel" role="group" aria-label="%s"><div class="ops-center-panel__nav">%s</div><div class="ops-center-panel__content">%s</div></div>',
+            '<div class="ops-center-panel" role="dialog" aria-modal="true" aria-label="%1$s"><div class="ops-center-panel__titlebar"><div class="ops-center-panel__brand">%2$s<span class="ops-center-panel__brand-title">%3$s</span></div><div class="ops-center-panel__top-actions" aria-label="%4$s">%5$s</div></div><div class="ops-center-panel__body"><div class="ops-center-panel__nav">%6$s</div><div class="ops-center-panel__content">%7$s</div></div></div>',
             esc_attr__('Ops Center tools', 'unified-ops-center'),
+            $this->ops_center_mark(),
+            esc_html__('Ops Center', 'unified-ops-center'),
+            esc_attr__('Ops Center panel actions', 'unified-ops-center'),
+            $header_actions,
             implode('', $left_sections),
             implode('', $panes)
         );
     }
 
+
+    private function render_header_panel_button(string $target_id, string $label, string $aria_label, string $icon = ''): string {
+        $icon_markup = '' !== $icon ? sprintf('<span class="dashicons %s" aria-hidden="true"></span>', esc_attr($icon)) : '';
+
+        return sprintf(
+            '<button type="button" class="ops-center-panel__top-action" data-ops-center-pane-trigger="%1$s" aria-controls="%1$s" aria-expanded="false" aria-label="%2$s">%3$s<span>%4$s</span></button>',
+            esc_attr($target_id),
+            esc_attr($aria_label),
+            $icon_markup,
+            esc_html($label)
+        );
+    }
+
+    private function render_header_link(string $url, string $label, string $aria_label, string $icon = '', string $extra_attrs = ''): string {
+        $icon_markup = '' !== $icon ? sprintf('<span class="dashicons %s" aria-hidden="true"></span>', esc_attr($icon)) : '';
+
+        return sprintf(
+            '<a class="ops-center-panel__top-action" href="%1$s" aria-label="%2$s" title="%2$s"%3$s>%4$s<span>%5$s</span></a>',
+            esc_url($url),
+            esc_attr($aria_label),
+            $extra_attrs,
+            $icon_markup,
+            esc_html($label)
+        );
+    }
+
+    private function ops_center_mark(): string {
+        return '<span class="ops-center-panel__brand-icon dashicons dashicons-superhero" aria-hidden="true"></span>';
+    }
 
     private function detected_builder(): array {
         if (class_exists('\\Etch\\Plugin')) {
@@ -351,8 +393,15 @@ final class Admin_Bar {
     }
 
     private function render_link_pane(string $id, string $heading, array $items, bool $active = false): string {
-        $links = '';
+        $links       = '';
+        $footer_link = '';
+
         foreach ($items as $item) {
+            if (!empty($item['is_footer'])) {
+                $footer_link .= $this->render_panel_footer_link((string) $item['label'], (string) $item['url'], (string) ($item['target'] ?? ''));
+                continue;
+            }
+
             $links .= $this->render_panel_link((string) $item['label'], (string) $item['url'], (string) ($item['target'] ?? ''));
         }
 
@@ -361,13 +410,25 @@ final class Admin_Bar {
         }
 
         return sprintf(
-            '<section id="%s" class="ops-center-panel__pane%s" role="region" aria-label="%s"%s><h3 class="ops-center-panel__pane-heading">%s</h3><ul class="ops-center-panel__list ops-center-panel__list--links">%s</ul></section>',
+            '<section id="%s" class="ops-center-panel__pane%s" role="region" aria-label="%s"%s><h3 class="ops-center-panel__pane-heading">%s</h3><ul class="ops-center-panel__list ops-center-panel__list--links">%s</ul>%s</section>',
             esc_attr($id),
             $active ? ' is-active' : '',
             esc_attr($heading),
             $active ? '' : ' hidden',
             esc_html($heading),
-            $links
+            $links,
+            $footer_link
+        );
+    }
+
+    private function render_panel_footer_link(string $label, string $url, string $target = ''): string {
+        $target_attr = '_blank' === $target ? ' target="_blank" rel="noopener noreferrer"' : '';
+
+        return sprintf(
+            '<div class="ops-center-panel__pane-footer"><a class="ops-center-panel__link ops-center-panel__link--footer" href="%s"%s>%s</a></div>',
+            esc_url($url),
+            $target_attr,
+            esc_html($label)
         );
     }
 
@@ -397,13 +458,6 @@ final class Admin_Bar {
         $target_attr  = '_blank' === $target ? ' target="_blank" rel="noopener noreferrer"' : '';
         $action_attrs = '';
         $author_attr  = $author_id > 0 ? sprintf(' data-ops-center-author="%d"', $author_id) : '';
-
-        if ('#ops-center-command-palette' === $url) {
-            $action_attrs = sprintf(
-                ' data-ops-center-open-command-palette="true" aria-label="%s"',
-                esc_attr__('Open the WordPress command palette', 'unified-ops-center')
-            );
-        }
 
         if (!$show_actions || '' === $wp_editor_url) {
             $wp_attr = '';
@@ -660,11 +714,12 @@ final class Admin_Bar {
                 continue;
             }
 
-            $sync_label = $this->pattern_sync_label($pattern);
-            $sync_abbr  = $this->pattern_sync_abbr($pattern);
-            $label      = $pattern->post_title ?: $pattern->post_name;
+            $sync_label     = $this->pattern_sync_label($pattern);
+            $sync_abbr      = $this->pattern_sync_abbr($pattern);
+            $category_label = $this->pattern_category_label((int) $pattern->ID);
+            $label          = $pattern->post_title ?: $pattern->post_name;
 
-            $items .= $this->render_pattern_row($label, $this->etch_editor_url((int) $pattern->ID, 0), $this->wp_editor_url((int) $pattern->ID), $sync_label, $sync_abbr);
+            $items .= $this->render_pattern_row($label, $this->etch_editor_url((int) $pattern->ID, 0), $this->wp_editor_url((int) $pattern->ID), $sync_label, $sync_abbr, $category_label);
         }
 
         if ('' === $items) {
@@ -680,10 +735,25 @@ final class Admin_Bar {
         ];
     }
 
-    private function render_pattern_row(string $label, string $builder_url, string $wp_editor_url, string $sync_label, string $sync_abbr): string {
+    private function render_pattern_row(string $label, string $builder_url, string $wp_editor_url, string $sync_label, string $sync_abbr, string $category_label = ''): string {
         $builder       = $this->detected_builder();
         $builder_label = 'wordpress' === $builder['key'] ? '' : (string) $builder['label'];
         $actions       = '';
+        $meta_markup   = '';
+
+        if ('' !== $category_label) {
+            $meta_markup .= sprintf(
+                '<span class="ops-center-panel__badge ops-center-panel__badge--category" title="%1$s" aria-label="%1$s">%2$s</span>',
+                esc_attr(sprintf(__('Pattern category: %s', 'unified-ops-center'), $category_label)),
+                esc_html($category_label)
+            );
+        }
+
+        $meta_markup .= sprintf(
+            '<span class="ops-center-panel__badge" title="%1$s" aria-label="%1$s">%2$s</span>',
+            esc_attr($sync_label),
+            esc_html($sync_abbr)
+        );
 
         if ('' !== $builder_label && '' !== $builder_url) {
             $actions .= $this->render_item_action($builder_label, sprintf(__('Edit %s in %s', 'unified-ops-center'), $label, $builder_label), $builder_url);
@@ -692,13 +762,39 @@ final class Admin_Bar {
         $actions .= $this->render_item_action(__('Core WP', 'unified-ops-center'), sprintf(__('Edit %s in WordPress', 'unified-ops-center'), $label), $wp_editor_url);
 
         return sprintf(
-            '<li class="ops-center-panel__item"><div class="ops-center-panel__row ops-center-panel__row--pattern"><span class="ops-center-panel__row-label"><span>%s</span><span class="ops-center-panel__badge" title="%s" aria-label="%s">%s</span></span><span class="ops-center-panel__row-actions">%s</span></div></li>',
+            '<li class="ops-center-panel__item"><div class="ops-center-panel__row ops-center-panel__row--pattern"><span class="ops-center-panel__row-label"><span>%s</span><span class="ops-center-panel__row-meta">%s</span></span><span class="ops-center-panel__row-actions">%s</span></div></li>',
             esc_html($label),
-            esc_attr($sync_label),
-            esc_attr($sync_label),
-            esc_html($sync_abbr),
+            $meta_markup,
             $actions
         );
+    }
+
+    private function pattern_category_label(int $post_id): string {
+        $taxonomies = ['wp_pattern_category', 'wp_theme'];
+
+        foreach ($taxonomies as $taxonomy) {
+            if (!taxonomy_exists($taxonomy)) {
+                continue;
+            }
+
+            $terms = get_the_terms($post_id, $taxonomy);
+            if (is_wp_error($terms) || empty($terms)) {
+                continue;
+            }
+
+            $names = [];
+            foreach ($terms as $term) {
+                if (!empty($term->name)) {
+                    $names[] = (string) $term->name;
+                }
+            }
+
+            if ($names) {
+                return implode(', ', array_slice($names, 0, 2));
+            }
+        }
+
+        return '';
     }
 
     private function render_browser_pane(array $browser, bool $active = false): string {

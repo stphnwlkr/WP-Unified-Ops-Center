@@ -809,3 +809,255 @@
         border-radius: 12px !important;
     }
 }
+
+/* 1.2.0: Centered panel shell with title bar. */
+html.ops-center-open,
+body.ops-center-open {
+    overflow: hidden !important;
+}
+
+#wpadminbar #wp-admin-bar-ops-center > .ab-sub-wrapper {
+    position: fixed !important;
+    inset-block-start: var(--wp-admin--admin-bar--height, 32px) !important;
+    inset-inline: 0 !important;
+    display: grid !important;
+    place-items: center !important;
+    width: 100vw !important;
+    height: calc(100svh - var(--wp-admin--admin-bar--height, 32px)) !important;
+    max-width: none !important;
+    inline-size: 100vw !important;
+    padding: 1rem !important;
+    background: rgb(0 0 0 / .38) !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    overflow: hidden !important;
+}
+
+#wpadminbar #wp-admin-bar-ops-center:not(.ops-center-panel-open) > .ab-sub-wrapper {
+    display: none !important;
+}
+
+#wpadminbar .ops-center-panel {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    grid-template-rows: auto minmax(0, 1fr) !important;
+    inline-size: min(96rem, calc(100vw - 2rem)) !important;
+    block-size: min(52rem, calc(100svh - var(--wp-admin--admin-bar--height, 32px) - 2rem)) !important;
+    max-inline-size: calc(100vw - 2rem) !important;
+    max-block-size: calc(100svh - var(--wp-admin--admin-bar--height, 32px) - 2rem) !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+}
+
+#wpadminbar .ops-center-panel__titlebar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-block-size: 4rem;
+    padding: .85rem 1rem;
+    color: var(--ec-text, #c7c8ca);
+    background:
+        linear-gradient(90deg, color-mix(in srgb, var(--ec-sidebar, #081827) 92%, var(--ec-accent-2, #22d3ee)), var(--ec-surface, #101827));
+    border-block-end: 1px solid var(--ec-border, rgb(148 163 184 / .16));
+}
+
+#wpadminbar .ops-center-panel__brand {
+    display: inline-flex;
+    align-items: center;
+    gap: .65rem;
+    min-inline-size: 0;
+    color: var(--ec-heading, #f6f7fb);
+    font-weight: 800;
+    line-height: 1.1;
+}
+
+#wpadminbar .ops-center-panel__brand-icon {
+    display: inline-grid;
+    place-items: center;
+    inline-size: 2.25rem;
+    block-size: 2.25rem;
+    flex: 0 0 auto;
+    color: #fff;
+    background: color-mix(in srgb, var(--ec-accent, #3b82f6) 72%, var(--ec-surface-2, #151f31));
+    border: 1px solid color-mix(in srgb, var(--ec-accent, #3b82f6) 62%, transparent);
+    border-radius: 10px;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / .12);
+}
+
+#wpadminbar .ops-center-panel__brand-icon.dashicons {
+    font-family: dashicons;
+    font-size: 1.3rem;
+    line-height: 1;
+}
+
+#wpadminbar .ops-center-panel__brand-title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 1.05rem;
+}
+
+#wpadminbar .ops-center-panel__top-actions {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: .5rem;
+    flex-wrap: wrap;
+}
+
+#wpadminbar .ops-center-panel__top-action {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: .4rem;
+    min-block-size: 2.35rem;
+    inline-size: 10.75rem;
+    padding: .48rem .75rem !important;
+    color: var(--ec-text, #c7c8ca) !important;
+    background: color-mix(in srgb, var(--ec-surface-2, #151f31) 72%, transparent) !important;
+    border: 1px solid var(--ec-border-strong, rgb(148 163 184 / .28)) !important;
+    border-radius: 6px !important;
+    font: inherit !important;
+    font-weight: 800 !important;
+    line-height: 1 !important;
+    text-decoration: none !important;
+    white-space: nowrap !important;
+    cursor: pointer;
+}
+
+#wpadminbar .ops-center-panel__top-action:hover,
+#wpadminbar .ops-center-panel__top-action:focus,
+#wpadminbar .ops-center-panel__top-action.is-active {
+    color: #fff !important;
+    background: color-mix(in srgb, var(--ec-accent, #3b82f6) 58%, var(--ec-surface-2, #151f31)) !important;
+    border-color: color-mix(in srgb, var(--ec-accent, #3b82f6) 68%, transparent) !important;
+    outline: none;
+}
+
+#wpadminbar .ops-center-panel__top-action:focus-visible {
+    outline: 3px solid var(--ec-focus, #72aee6) !important;
+    outline-offset: 2px;
+}
+
+#wpadminbar .ops-center-panel__top-action .dashicons {
+    font-family: dashicons;
+    font-size: 1rem;
+    line-height: 1;
+}
+
+#wpadminbar .ops-center-panel__body {
+    display: grid;
+    grid-template-columns: clamp(17rem, 28vw, 20rem) minmax(0, 1fr);
+    min-block-size: 0;
+    overflow: hidden;
+}
+
+#wpadminbar .ops-center-panel__nav,
+#wpadminbar .ops-center-panel__content {
+    block-size: auto !important;
+    max-block-size: none !important;
+    min-block-size: 0;
+}
+
+#wpadminbar .ops-center-panel__nav {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+}
+
+#wpadminbar .ops-center-panel__content {
+    overflow: hidden !important;
+}
+
+#wpadminbar .ops-center-panel__pane {
+    min-block-size: 0;
+}
+
+#wpadminbar .ops-center-panel__pane.is-active {
+    block-size: 100%;
+}
+
+#wpadminbar .ops-center-panel__list--scroll {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+}
+
+#wpadminbar .ops-center-panel__link,
+#wpadminbar .ops-center-panel__button,
+#wpadminbar .ops-center-panel__row,
+#wpadminbar .ops-center-browser__sticky,
+#wpadminbar .ops-center-browser__input,
+#wpadminbar .ops-center-panel__item-action {
+    border-radius: 6px !important;
+}
+
+@media screen and (max-width: 782px) {
+    #wpadminbar #wp-admin-bar-ops-center > .ab-sub-wrapper {
+        inset-block-start: 46px !important;
+        height: calc(100svh - 46px) !important;
+        padding: .5rem !important;
+    }
+
+    #wpadminbar .ops-center-panel {
+        inline-size: calc(100vw - 1rem) !important;
+        block-size: calc(100svh - 46px - 1rem) !important;
+        max-inline-size: calc(100vw - 1rem) !important;
+        max-block-size: calc(100svh - 46px - 1rem) !important;
+    }
+
+    #wpadminbar .ops-center-panel__titlebar {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: .75rem;
+    }
+
+    #wpadminbar .ops-center-panel__top-actions {
+        justify-content: flex-start;
+        inline-size: 100%;
+    }
+
+    #wpadminbar .ops-center-panel__body {
+        grid-template-columns: 1fr;
+        grid-template-rows: minmax(10rem, 38%) minmax(0, 1fr);
+    }
+
+    #wpadminbar .ops-center-panel__nav {
+        border-inline-end: 0 !important;
+        border-block-end: 1px solid var(--ec-border, rgb(148 163 184 / .16));
+    }
+}
+
+/* 1.3.1: Keep list-management actions anchored at the pane bottom. */
+#wpadminbar .ops-center-panel__pane-footer {
+    display: flex !important;
+    justify-content: flex-start !important;
+    margin-block-start: auto !important;
+    padding-block-start: 1rem !important;
+}
+
+#wpadminbar .ops-center-panel__link--footer {
+    display: inline-flex !important;
+    inline-size: fit-content !important;
+    max-inline-size: 100% !important;
+    flex: 0 0 auto !important;
+}
+
+
+/* 1.3.2: Consistent title bar actions and pattern metadata. */
+#wpadminbar .ops-center-panel__top-action {
+    inline-size: 10.75rem !important;
+}
+
+#wpadminbar .ops-center-panel__row-meta {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    flex-wrap: wrap;
+}
+
+#wpadminbar .ops-center-panel__badge--category {
+    max-inline-size: 16rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
